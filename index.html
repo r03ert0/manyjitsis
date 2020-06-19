@@ -1,0 +1,67 @@
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background:#333;
+    font-size: 14px;
+  }
+  p {
+    font-family: sans-serif;
+    color:white;
+    font-size: 1rem;
+    padding:1rem;
+    cursor: pointer;
+  }
+  p.selected {
+    background: #444;
+    border-right: 4px solid white;
+  }
+  :root {
+    --nav-width: 200px;
+  }
+  #jitsi {
+    display: inline-block;
+    width: calc(100% - var(--nav-width));
+    height: 100%;
+  }
+  #rooms {
+    float: left;
+    text-align: right;
+    width: var(--nav-width);
+    height: 100%;
+  }
+</style>
+<div id="rooms">
+  <p class="selected" data-room="ManyJitsisMainRoom">Main room</p>
+  <p data-room="ManyJitsisRoomOne">Room One</p>
+  <p data-room="ManyJitsisRoomTwo">Room Two</p>
+  <p data-room="ManyJitsisRoomThree">Room Three</p>
+  <p data-room="ManyJitsisRoomFour">Room Four</p>
+</div>
+<div id="jitsi"></div>
+
+<script src="https://meet.jit.si/external_api.js"></script>
+
+<script>
+  const domain = 'meet.jit.si';
+  const {offsetWidth: width, offsetHeight: height} = document.querySelector("#jitsi");
+  const options = {
+    roomName: 'OpenForumMainRoom',
+    width, height,
+    parentNode: document.querySelector('#jitsi'),
+    configOverwrite: {
+      startWithAudioMuted: true
+    }
+  };
+  api = new JitsiMeetExternalAPI(domain, options);
+  document.querySelectorAll('p').forEach((el) => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('p').forEach((el) => el.classList.remove('selected'));
+      el.classList.add('selected');
+      const {room} = el.dataset;
+      options.roomName = room;
+      api.dispose();
+      api = new JitsiMeetExternalAPI(domain, options);
+    });
+  });
+</script>
