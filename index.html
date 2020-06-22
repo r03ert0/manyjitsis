@@ -1,9 +1,18 @@
+<link href="https://fonts.googleapis.com/css?family=Quicksand" rel="stylesheet" type="text/css">
 <style>
   html, body {
     margin: 0;
     padding: 0;
-    background:#333;
+    background:#222;
     font-size: 14px;
+  }
+  span {
+    display:block;
+    font-family: "Quicksand", sans-serif;
+    color:white;
+    font-size:3rem;
+    line-height: 4rem;
+    margin-bottom:2rem;
   }
   p {
     font-family: sans-serif;
@@ -20,9 +29,26 @@
     --nav-width: 200px;
   }
   #jitsi {
+    display: none;
+    width: calc(100% - var(--nav-width));
+    height: 100%;
+  }
+  #home {
     display: inline-block;
     width: calc(100% - var(--nav-width));
     height: 100%;
+    position:relative;
+    background: #333;
+  }
+  #content {
+    display: block;
+    padding: 2rem;
+    width: 50%;
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50% , -50%);
+    text-align: center;
   }
   #rooms {
     float: left;
@@ -32,19 +58,29 @@
   }
 </style>
 <div id="rooms">
-  <p class="selected" data-room="ManyJitsisMainRoom">Main room</p>
-  <p data-room="ManyJitsisRoomOne">Room One</p>
-  <p data-room="ManyJitsisRoomTwo">Room Two</p>
-  <p data-room="ManyJitsisRoomThree">Room Three</p>
-  <p data-room="ManyJitsisRoomFour">Room Four</p>
+  <p class="selected" data-room="Home">Home</p>
+  <p data-room="OpenForumSavanturiersK12">Savanturiers/K12</p>
+  <p data-room="OpenForumFdV Bachelor">FdV Bachelor</p>
+  <p data-room="OpenForumEURIPAIREFIRE">EURIP: AIRE+ FIRE</p>
+  <p data-room="OpenForumAdminHR">Admin+HR</p>
+  <p data-room="OpenForumIT">IT</p>
+  <p data-room="OpenForumLabs">Labs</p>
+  <p data-room="OpenForumCommFundraising">Comm & Fundraising</p>
 </div>
 <div id="jitsi"></div>
+<div id="home">
+  <div id="content">
+    <img width="50%" src="cri-logo.svg"/>
+    <span>Welcome to CRI Research Open forum, 23/6/2020</span>
+    <span>To join a discussion room, just click on one of the tabs on the left.</span>
+  </div>
+</div>
 
 <script src="https://meet.jit.si/external_api.js"></script>
 
 <script>
   const domain = 'meet.jit.si';
-  const {offsetWidth: width, offsetHeight: height} = document.querySelector("#jitsi");
+  const {offsetWidth: width, offsetHeight: height} = document.querySelector("#home");
   const options = {
     roomName: 'OpenForumMainRoom',
     width, height,
@@ -53,15 +89,24 @@
       startWithAudioMuted: true
     }
   };
-  api = new JitsiMeetExternalAPI(domain, options);
+  let api;
   document.querySelectorAll('p').forEach((el) => {
     el.addEventListener('click', () => {
       document.querySelectorAll('p').forEach((el) => el.classList.remove('selected'));
       el.classList.add('selected');
       const {room} = el.dataset;
       options.roomName = room;
-      api.dispose();
-      api = new JitsiMeetExternalAPI(domain, options);
+      if(api) {
+        api.dispose();
+      }
+      if(room === "Home") {
+        document.querySelector("#home").style.display='inline-block';
+        document.querySelector("#jitsi").style.display='none';
+      } else {
+        document.querySelector("#home").style.display='none';
+        document.querySelector("#jitsi").style.display='inline-block';
+        api = new JitsiMeetExternalAPI(domain, options);
+      }
     });
   });
 </script>
